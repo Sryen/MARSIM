@@ -1,5 +1,5 @@
 <launch>
-    <arg name="use_gpu_" value="false"/>
+    <arg name="use_gpu_" value="true"/>
 
     <arg name="drone_num" value="1"/>
 
@@ -22,7 +22,7 @@
         <param name="map_offset_z" value="0.0"/>   
    </node>
 
-    <group if="$(arg use_gpu_)">
+    <!-- <group if="$(arg use_gpu_)">
         <node pkg="map_generator" name="map_pub1" type="map_pub" output="screen"
                 args="$(arg map_name)">
                 <param name="downsample_res" value="0.1"/>         
@@ -30,7 +30,7 @@
                 <param name="map_offset_y" value="0.0"/>   
                 <param name="map_offset_z" value="0.0"/>   
         </node>  
-    </group>
+    </group> -->
     <group unless="$(arg use_gpu_)">
         <node pkg="map_generator" name="map_pub2" type="map_pub" output="screen"
                 args="$(arg map_name)">
@@ -56,7 +56,9 @@
         <arg name="use_uav_extra_model_" value="$(arg use_uav_extra_model)"/>
     </include>
 
+   <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="screen"
+   args="-d $(find test_interface)/config/traj.rviz" /> -->
    <node name="rvizvisualisation" pkg="rviz" type="rviz" output="screen"
-   args="-d $(find test_interface)/config/traj.rviz" />
+   args="-d /home/dk/桌面/marsim.rviz" />
 
 </launch>

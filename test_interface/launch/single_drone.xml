@@ -104,11 +104,12 @@
 
             <param name="downsample_res" value="$(arg downsample_resolution_)"/>
 
-            <param name="dynobj_enable" value="0"/>
-            <param name="dynobject_size" value="0.8"/>
-            <param name="dynobject_num" value="10"/>
+            <param name="dynobj_enable" value="1"/>
+            <param name="dynobject_size" value="2.5"/>
+            <param name="dynobject_num" value="3"/>
             <param name="dyn_mode" value="0"/><!-- 0 for a=0, 1 for a=g, 2 for random walk -->
-            <param name="dyn_velocity" value="1.0"/>
+            <param name="dyn_velocity" value="5"/>
+            <param name="dyn_type" value = "1" />
 
             <param name="use_uav_extra_model" value="$(arg use_uav_extra_model_)"/>
 
@@ -147,12 +148,11 @@
 
                 <param name="downsample_res" value="$(arg downsample_resolution_)"/>
 
-                <param name="dynobj_enable" value="0"/>
+                <param name="dynobj_enable" value="1"/>
                 <param name="dynobject_size" value="0.8"/>
-                <param name="dynobject_num" value="10"/>
+                <param name="dynobject_num" value="2"/>
                 <param name="dyn_mode" value="0"/><!-- 0 for a=0, 1 for a=g, 2 for random walk -->
                 <param name="dyn_velocity" value="1.0"/>
-
                 <param name="use_uav_extra_model" value="$(arg use_uav_extra_model_)"/>
 
                 <!-- collision parameter -->
@@ -189,7 +189,7 @@
 
                 <param name="downsample_res" value="$(arg downsample_resolution_)"/>
 
-                <param name="dynobj_enable" value="0"/>
+                <param name="dynobj_enable" value="1"/>
                 <param name="dynobject_size" value="0.8"/>
                 <param name="dynobject_num" value="10"/>
                 <param name="dyn_mode" value="0"/><!-- 0 for a=0, 1 for a=g, 2 for random walk -->
@@ -232,10 +232,11 @@
 
                 <param name="downsample_res" value="$(arg downsample_resolution_)"/>
 
-                <param name="dynobj_enable" value="0"/>
-                <param name="dynobject_size" value="0.8"/>
-                <param name="dynobject_num" value="10"/>
+                <param name="dynobj_enable" value="1"/>
+                <param name="dynobject_size" value="1"/>
+                <param name="dynobject_num" value="5"/>
                 <param name="dyn_mode" value="0"/><!-- 0 for a=0, 1 for a=g, 2 for random walk -->
+                <param name="dyn_type" value = "1" />
                 <param name="dyn_velocity" value="1.0"/>
 
                 <param name="use_uav_extra_model" value="$(arg use_uav_extra_model_)"/>

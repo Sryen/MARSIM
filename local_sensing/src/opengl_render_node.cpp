@@ -115,6 +115,9 @@ PointType uav_modelmax;
 int uavhash_xsize, uavhash_ysize, uavhash_zsize;
 pcl::PointCloud<PointType> collision_points;
 
+//modefied by ppp
+int dyn_type;//0 for uav, 1 for sphere, 2 for box 
+
 pcl::PointCloud<PointType> generate_sphere_cloud(double size)
 {
   pcl::PointCloud<PointType> sphere_cloud;
@@ -329,6 +332,10 @@ void dynobjGenerate(const ros::TimerEvent &event)
           dynobj_poss[n] = dynobj_poss[n] + fly_time * dynobj_dir[n];
           break;
           }
+        case 3:
+          {
+          break;
+          }
         
         default:
           break;
@@ -337,16 +344,31 @@ void dynobjGenerate(const ros::TimerEvent &event)
           // if dynamic obstacle is out of bounding box, regenerte one
           if (dynobj_poss[n](0) < map_min(0) || dynobj_poss[n](0) > map_max(0) || dynobj_poss[n](1) < map_min(1) || dynobj_poss[n](1) > map_max(1) || dynobj_poss[n](2) < map_min(2) || dynobj_poss[n](2) > map_max(2))
           {
-            dynobj_poss[n](0) = rand() / double(RAND_MAX) * (map_max(0) - map_min(0)) + map_min(0);
-            dynobj_poss[n](1) = rand() / double(RAND_MAX) * (map_max(1) - map_min(1)) + map_min(1);
-            dynobj_poss[n](2) = rand() / double(RAND_MAX) * (map_max(2) - map_min(2)) + map_min(2);
-            Eigen::Vector3d dyntemp_dir_polar;
-            dyntemp_dir_polar(0) = rand() / double(RAND_MAX) * 3.1415926;
-            dyntemp_dir_polar(1) = (rand() / double(RAND_MAX) - 0.5) * 3.1415926;
-            dynobj_dir[n](0) = dyn_velocity * sin(dyntemp_dir_polar(1));
-            dynobj_dir[n](1) = dyn_velocity * cos(dyntemp_dir_polar(1)) * sin(dyntemp_dir_polar(0));
-            dynobj_dir[n](2) = dyn_velocity * cos(dyntemp_dir_polar(1)) * cos(dyntemp_dir_polar(0));
-            
+            if(dyn_type == -1){
+              dynobj_poss[n](0) = rand() / double(RAND_MAX) * (map_max(0) - map_min(0)) + map_min(0);
+              dynobj_poss[n](1) = rand() / double(RAND_MAX) * (map_max(1) - map_min(1)) + map_min(1);
+              dynobj_poss[n](2) = rand() / double(RAND_MAX) * (map_max(2) - map_min(2)) + map_min(2);
+              Eigen::Vector3d dyntemp_dir_polar;
+              dyntemp_dir_polar(0) = rand() / double(RAND_MAX) * 3.1415926;
+              dyntemp_dir_polar(1) = (rand() / double(RAND_MAX) - 0.5) * 3.1415926;
+              dynobj_dir[n](0) = dyn_velocity * sin(dyntemp_dir_polar(1));
+              dynobj_dir[n](1) = dyn_velocity * cos(dyntemp_dir_polar(1)) * sin(dyntemp_dir_polar(0));
+              dynobj_dir[n](2) = dyn_velocity * cos(dyntemp_dir_polar(1)) * cos(dyntemp_dir_polar(0));
+            }
+            else{
+              ROS_INFO("current pos:%f,%f,%f",dynobj_poss[n](0),dynobj_poss[n](1),dynobj_poss[n](2));
+              dynobj_poss[n](0) = (map_max(0) - map_min(0)) / (dynobject_num + 1) * (n+1) + map_min(0);
+              dynobj_poss[n](0) = dynobj_poss[n](0);
+              dynobj_poss[n](1) = dynobj_poss[n](1);
+              // dynobj_poss[n](1) = ( map_min(1) + map_max(1) )/2;
+              dynobj_poss[n](2) = dynobj_poss[n](2);
+              // dynobj_dir[n](2) = 0;
+              // dynobj_dir[n](0) = 0;
+              // dynobj_dir[n](1) = dyn_velocity * (n % 2 ? 1 : -1);
+              dynobj_dir[n] = -1 * dynobj_dir[n];
+              ROS_INFO("regenerate!!!!!!!!!!!!!!!!!!!!!!current pos:%f,%f,%f",dynobj_poss[n](0),dynobj_poss[n](1),dynobj_poss[n](2));
+              ROS_INFO("regenerate!!!!!!!!!!!!!!!!!!!!!!current vel:%f,%f,%f",dynobj_dir[n](0),dynobj_dir[n](1),dynobj_dir[n](2));
+            }   
           }
       dyn_start_time_vec[n] = ros::Time::now();
       // generate point cloud of dynamic obstacle
@@ -362,7 +384,7 @@ void dynobjGenerate(const ros::TimerEvent &event)
       // }
     }
 
-    ROS_INFO("dynobj points size = %d", dynobj_points_vis.points.size());
+    // ROS_INFO("dynobj points size = %d", dynobj_points_vis.points.size());
 
     dynobj_points_vis.width = dynobj_points_vis.points.size();
     dynobj_points_vis.height = 1;
@@ -634,7 +656,7 @@ void renderSensedPoints(const ros::TimerEvent& event)
       geometry_msgs::PoseStamped totaltime_pub;
       totaltime_pub.pose.position.x = accumulate(comp_time_vec.begin(),comp_time_vec.end(),0.0)/comp_time_vec.size();
       comp_time_pub.publish(totaltime_pub);
-      ROS_INFO("Temp compute time = %lf, average compute time = %lf", comp_time_temp,totaltime_pub.pose.position.x);
+      // ROS_INFO("Temp compute time = %lf, average compute time = %lf", comp_time_temp,totaltime_pub.pose.position.x);
     }else{
       comp_time_count++;
     }
@@ -708,6 +730,7 @@ int main(int argc, char** argv)
   nh.getParam("dynobject_num", dynobject_num);
   nh.getParam("dyn_mode", dyn_mode);
   nh.getParam("dyn_velocity", dyn_velocity);
+  nh.param<int>("dyn_type", dyn_type,-1);
 
   nh.getParam("use_uav_extra_model", use_uav_extra_model);
 
@@ -861,41 +884,82 @@ int main(int argc, char** argv)
     map_max(1) = global_mapmax.y;
     map_max(2) = global_mapmax.z;
 
-    // ROS_INFO("Global map min x = %f, max x = %f" , global_mapmin.x , global_mapmax.x);
-
+    ROS_INFO("Global map min x = %f, max x = %f" , global_mapmin.x , global_mapmax.x);
+    ROS_INFO("Global map min y = %f, max y = %f" , global_mapmin.y , global_mapmax.y);
+    ROS_INFO("Global map min z = %f, max z = %f" , global_mapmin.z , global_mapmax.z);
+    //x:-20,20 y:-10,10 z:-3,3
     // dynamic objects initial pos generate
     srand((unsigned)time(NULL));
-    for (int i = 0; i < dynobject_num; i++)
-    {
-      Eigen::Vector3d dyntemp_pos;
-      dyntemp_pos(0) = rand() / double(RAND_MAX) * (global_mapmax.x - global_mapmin.x) + global_mapmin.x;
-      dyntemp_pos(1) = rand() / double(RAND_MAX) * (global_mapmax.y - global_mapmin.y) + global_mapmin.y;
-      dyntemp_pos(2) = rand() / double(RAND_MAX) * (global_mapmax.z - global_mapmin.z) + global_mapmin.z;
-      dynobj_poss.push_back(dyntemp_pos);
-
-      // random genrate dynamic object type and motion mode
-      int dynobj_type = rand() % 3;
-      dynobj_types.push_back(dynobj_type);
-      // int dynobj_motion_mode = rand() % 2;
-      dynobj_move_modes.push_back(dynobj_type);
-
-      Eigen::Vector3d dyntemp_dir, dyntemp_dir_polar;
-      dyntemp_dir_polar(0) = rand() / double(RAND_MAX) * 3.1415926;
-      dyntemp_dir_polar(1) = (rand() / double(RAND_MAX) - 0.5) * 3.1415926;
-      dyntemp_dir[2] = dyn_velocity * sin(dyntemp_dir_polar(1));
-      dyntemp_dir[1] = dyn_velocity * cos(dyntemp_dir_polar(1)) * sin(dyntemp_dir_polar(0));
-      dyntemp_dir[0] = dyn_velocity * cos(dyntemp_dir_polar(1)) * cos(dyntemp_dir_polar(0));
-      dynobj_dir.push_back(dyntemp_dir);
-
-      if(dyn_obs_diff_size_on)
+    if(dyn_type == -1){//-1 for random,0 for uav,1 for sphere,2 for box
+      for (int i = 0; i < dynobject_num; i++)
       {
-        double dynobject_rand_size = rand() / double(RAND_MAX) * (dynobject_size - downsample_res) + downsample_res;
-        dyn_obs_size_vec.push_back(dynobject_rand_size);
+        Eigen::Vector3d dyntemp_pos;
+        dyntemp_pos(0) = rand() / double(RAND_MAX) * (global_mapmax.x - global_mapmin.x) + global_mapmin.x;
+        dyntemp_pos(1) = rand() / double(RAND_MAX) * (global_mapmax.y - global_mapmin.y) + global_mapmin.y;
+        dyntemp_pos(2) = rand() / double(RAND_MAX) * (global_mapmax.z - global_mapmin.z) + global_mapmin.z;
+        dynobj_poss.push_back(dyntemp_pos);
+
+        // ra dyntemp_dir_polarndom genrate dynamic object type and motion mode
+        int dynobj_type = rand() % 3;
+        dynobj_types.push_back(dynobj_type);
+        // int dynobj_motion_mode = rand() % 2;
+        dynobj_move_modes.push_back(dynobj_type);
+        
+  
+
+        Eigen::Vector3d dyntemp_dir, dyntemp_dir_polar;
+        dyntemp_dir_polar(0) = rand() / double(RAND_MAX) * 3.1415926;
+        dyntemp_dir_polar(1) = (rand() / double(RAND_MAX) - 0.5) * 3.1415926;
+        dyntemp_dir[2] = dyn_velocity * sin(dyntemp_dir_polar(1));
+        dyntemp_dir[1] = dyn_velocity * cos(dyntemp_dir_polar(1)) * sin(dyntemp_dir_polar(0));
+        dyntemp_dir[0] = dyn_velocity * cos(dyntemp_dir_polar(1)) * cos(dyntemp_dir_polar(0));
+        dynobj_dir.push_back(dyntemp_dir);
+
+        if(dyn_obs_diff_size_on)
+        {
+          double dynobject_rand_size = rand() / double(RAND_MAX) * (dynobject_size - downsample_res) + downsample_res;
+          dyn_obs_size_vec.push_back(dynobject_rand_size);
+        }
+
+        // dyn_start_time = ros::Time::now();
+        dyn_start_time_vec.push_back(ros::Time::now());      
+      }
+    }
+      else{
+        for (int i = 0; i < dynobject_num; i++)
+        {
+          Eigen::Vector3d dyntemp_pos;
+          dyntemp_pos(0) = (global_mapmax.x - global_mapmin.x) / (dynobject_num + 1) * (i+1) + global_mapmin.x;
+          dyntemp_pos(1) = i % 2 ? global_mapmax.y : global_mapmin.y;
+          dyntemp_pos(2) = rand() / double(RAND_MAX) * (global_mapmax.z - global_mapmin.z) + global_mapmin.z;
+          dynobj_poss.push_back(dyntemp_pos);
+
+          int dynobj_type = dyn_type;
+          // dynobj_types.push_back(i % 3);
+          dynobj_types.push_back(dynobj_type);
+          // int dynobj_motion_mode = rand() % 2;
+          dynobj_move_modes.push_back(dyn_mode);
+          
+    
+
+          Eigen::Vector3d dyntemp_dir;
+          dyntemp_dir[2] = 0;
+          dyntemp_dir[0] = 0;
+          dyntemp_dir[1] = dyn_velocity * (i % 2 ? -1 : 1);
+          dynobj_dir.push_back(dyntemp_dir);
+
+          if(dyn_obs_diff_size_on)
+          {
+            double dynobject_rand_size = rand() / double(RAND_MAX) * (dynobject_size - downsample_res) + downsample_res;
+            dyn_obs_size_vec.push_back(dynobject_rand_size);
+          }
+
+          // dyn_start_time = ros::Time::now();
+          dyn_start_time_vec.push_back(ros::Time::now());      
+          ROS_INFO("current pos:%f,%f,%f",dyntemp_pos(0),dyntemp_pos(1),dyntemp_pos(2));
+        }
       }
 
-      // dyn_start_time = ros::Time::now();
-      dyn_start_time_vec.push_back(ros::Time::now());      
-    }
   }
 
   // subscribe point cloud
