@@ -1,0 +1,40 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/dk/ws_livox/devel/include/**",
+        "/home/dk/ppp/devel/include/**",
+        "/home/dk/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/dk/ppp/src/MARSIM/cascadePID/include/**",
+        "/home/dk/catkin_ws/src/ddynamic_reconfigure/include/**",
+        "/home/dk/ws_livox/src/livox_horizon_loam/include/**",
+        "/home/dk/ppp/src/MARSIM/local_sensing/include/**",
+        "/home/dk/ppp/src/MARSIM/mars_drone_sim/include/**",
+        "/home/dk/catkin_ws/src/offboard_pkg/include/**",
+        "/home/dk/ppp/src/MARSIM/Utils/pose_utils/include/**",
+        "/home/dk/ppp/src/MARSIM/Utils/mars_quadrotor_msgs/include/**",
+        "/home/dk/catkin_ws/src/realsense-ros/realsense2_camera/include/**",
+        "/home/dk/catkin_ws/src/ros_rtsp/include/**",
+        "/home/dk/ppp/src/test1/include/**",
+        "/home/dk/ppp/src/MARSIM/Utils/uav_utils/include/**",
+        "/home/dk/catkin_ws/src/usb_cam/include/**",
+        "/home/dk/catkin_ws/src/velodyne/velodyne_driver/include/**",
+        "/home/dk/catkin_ws/src/velodyne/velodyne_laserscan/include/**",
+        "/home/dk/catkin_ws/src/velodyne/velodyne_pcl/include/**",
+        "/home/dk/catkin_ws/src/velodyne/velodyne_pointcloud/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

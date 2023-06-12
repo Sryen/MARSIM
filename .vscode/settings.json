@@ -1,0 +1,16 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/dk/ppp/devel/lib/python3/dist-packages",
+        "/home/dk/ws_livox/devel/lib/python3/dist-packages",
+        "/home/dk/catkin_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages",
+        "/usr/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/dk/ppp/devel/lib/python3/dist-packages",
+        "/home/dk/ws_livox/devel/lib/python3/dist-packages",
+        "/home/dk/catkin_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages",
+        "/usr/lib/python3/dist-packages"
+    ]
+}

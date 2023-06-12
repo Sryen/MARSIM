@@ -72,6 +72,7 @@ add_message_files(
         Gains.msg
         OutputData.msg
         PositionCommand.msg
+        PositionCommand_back.msg
         PPROutputData.msg
         Serial.msg
         SO3Command.msg
@@ -122,3 +123,8 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 #     encode_msgs
 # )
 
+catkin_install_python(PROGRAMS
+  scripts/key_control_node.py
+  scripts/rosbag2vedio.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

@@ -5,7 +5,7 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <quadrotor_msgs/PositionCommand.h>
-
+#include <quadrotor_msgs/PositionCommand_back.h>
 using namespace std;
 using namespace Eigen;
 
@@ -40,6 +40,13 @@ void cmd_callback(const geometry_msgs::PoseStamped& msg)
 }
 
 void fuel_position_cmd_callback(const quadrotor_msgs::PositionCommand::ConstPtr& cmd) {
+  pos_des = Eigen::Vector3d(cmd->position.x, cmd->position.y, cmd->position.z);
+  vel_des = Eigen::Vector3d(cmd->velocity.x, cmd->velocity.y, cmd->velocity.z);
+  acc_des = Eigen::Vector3d(cmd->acceleration.x, cmd->acceleration.y, cmd->acceleration.z);
+
+  yaw_des = cmd->yaw;
+}
+void fastplanner_position_cmd_callback(const quadrotor_msgs::PositionCommand_back::ConstPtr& cmd) {
   pos_des = Eigen::Vector3d(cmd->position.x, cmd->position.y, cmd->position.z);
   vel_des = Eigen::Vector3d(cmd->velocity.x, cmd->velocity.y, cmd->velocity.z);
   acc_des = Eigen::Vector3d(cmd->acceleration.x, cmd->acceleration.y, cmd->acceleration.z);
@@ -144,7 +151,7 @@ int main(int argc, char** argv)
                                            ros::TransportHints().tcpNoDelay());
     ros::Subscriber cmd_sub = n.subscribe("cmd_pose", 100, cmd_callback,
                                           ros::TransportHints().tcpNoDelay());
-    ros::Subscriber position_cmd_sub_ = n.subscribe("position_cmd", 10, fuel_position_cmd_callback,
+    ros::Subscriber position_cmd_sub_ = n.subscribe("position_cmd", 10, fastplanner_position_cmd_callback,
                                                     ros::TransportHints().tcpNoDelay());
 
     quad_PID.setdroneid(drone_id);
