@@ -139,6 +139,7 @@ pcl::PointCloud<PointType> generate_sphere_cloud(double size)
       temp_point.x = x;
       temp_point.y = y;
       temp_point.z = z;
+
       temp_point.intensity = MIN_INTENSITY + (MAX_INTENSITY - MIN_INTENSITY) * 1.0 / 2.0;
       sphere_cloud.push_back(temp_point);
     }
@@ -931,7 +932,8 @@ int main(int argc, char** argv)
           Eigen::Vector3d dyntemp_pos;
           dyntemp_pos(0) = (global_mapmax.x - global_mapmin.x) / (dynobject_num + 1) * (i+1) + global_mapmin.x;
           dyntemp_pos(1) = i % 2 ? global_mapmax.y : global_mapmin.y;
-          dyntemp_pos(2) = rand() / double(RAND_MAX) * (global_mapmax.z - global_mapmin.z) + global_mapmin.z;
+          // dyntemp_pos(2) = rand() / double(RAND_MAX) * (global_mapmax.z - global_mapmin.z) + global_mapmin.z;
+          dyntemp_pos(2) = 0;
           dynobj_poss.push_back(dyntemp_pos);
 
           int dynobj_type = dyn_type;
